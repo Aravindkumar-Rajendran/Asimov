@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="Web site created using create-react-app" />
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300&family=Open+Sans&family=Rubik+Distressed&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300&family=Open+Sans&family=Rubik+80s+Fade&family=Rubik+Distressed&display=swap" rel="stylesheet">
   <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -44,9 +44,11 @@
   </div>
   <div class="left_hand_credits">
     ASIMO
+    <p>An AI Driven English Learning</p>
   </div>
   <style>
     .right_hand_credits {
+      display:none;
       position: absolute;
       right: 0;
       top: 50%;
@@ -60,18 +62,25 @@
     .left_hand_credits {
       position: absolute;
       left: -5%;
-      top: 50%;
-      transform: translate(0,-50%);
+      top:40%;
+      text-align: center;
       -webkit-transform: rotate(-90deg);
       -moz-transform: rotate(-90deg);
       -o-transform: rotate(-90deg);
       -ms-transform: rotate(-90deg);
       transform: rotate(-90deg);
       z-index: 0;
-      font-size: 130px;
+      font-size: 160px;
       margin:0;
       padding: 0;
-      font-family: 'Rubik Distressed', cursive;
+      font-family: 'Rubik 80s Fade', cursive;
+    }
+    .left_hand_credits p{
+      font-size: 20px;
+      font-family: 'Open Sans', sans-serif;
+      padding:0;
+      margin:0;
+
     }
   </style>
 </body>
