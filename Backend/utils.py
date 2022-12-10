@@ -1,5 +1,6 @@
-
-
+from compare import equalize, insert_newlines
+import re
+import string
 
 def split_random_word(text_blob):
     """
@@ -22,6 +23,8 @@ def split_random_word(text_blob):
     word = text_blob[-1].strip()
     return {"word":word,"meaning": meaning, "examples": examples}
 
+
+
 def split_dialogue(dialogue_blob):
     """
     A: Hi, what are you doing?
@@ -40,3 +43,40 @@ def split_dialogue(dialogue_blob):
             user_list.append(text.split(":")[-1].strip())
 
     return {"app": app_list, "user": user_list}
+
+
+
+def diff_finder(in_text, out_text, width=40, margin=10, sidebyside=False, compact=False):
+    in_text = ''.join([i for i in in_text if i not in string.punctuation])
+    out_text = ''.join([i for i in out_text if i not in string.punctuation])
+
+    def show_comparison(s1, s2, width=40, margin=10, sidebyside=True, compact=False):
+        s1, s2 = equalize(s1,s2)
+
+        if sidebyside:
+            s1 = insert_newlines(s1, width, margin)
+            s2 = insert_newlines(s2, width, margin)
+            lft_list = []
+            rgt_list = []
+            if compact:
+                for i in range(0, len(s1)):
+                    lft = re.sub(' +', ' ', s1[i].replace('_', '')).ljust(width)
+                    rgt = re.sub(' +', ' ', s2[i].replace('_', '')).ljust(width) 
+                    lft_list.append(lft.strip())
+                    rgt_list.append(rgt.strip())   
+            else:
+                for i in range(0, len(s1)):
+                    lft = s1[i].ljust(width)
+                    rgt = s2[i].ljust(width)
+                    lft_list.append(lft.strip())
+                    rgt_list.append(rgt.strip())
+                
+            return (lft_list[0], rgt_list[0])
+        else:
+            return (s1.strip(), s2.strip())
+
+    diff = show_comparison(in_text.lower(), out_text.lower(), width=width, 
+                        margin=margin, sidebyside=sidebyside, compact=compact)
+    return diff
+
+
