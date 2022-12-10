@@ -1,0 +1,29 @@
+button {
+    background: rgba(255, 255, 255, 0.25);
+    border: none;
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    p {
+        margin: 0;
+        background: linear-gradient(269.09deg, #DB00FF 0%, rgba(12, 128, 193, 0.95) 108.34%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'IBM Plex Sans';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 31px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+button:hover{
+    background-color: #d965fa;
+}
+button:active{
+    background-color: #eb5e0c;
+}

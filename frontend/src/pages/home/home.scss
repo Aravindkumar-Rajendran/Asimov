@@ -1,0 +1,32 @@
+.home-wrapper {
+    background: linear-gradient(192.73deg, rgba(0, 255, 194, 0.6) -7.33%, rgba(0, 255, 194, 0) 104.58%);
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 2rem;
+    font-family: 'IBM Plex Sans', sans-serif;
+    display:flex;
+    flex-direction: column;
+    .welcome-card {
+        margin-top: 1rem;
+        padding: 3rem 2rem;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 10px;
+        p{
+            background: linear-gradient(283.26deg, rgba(12, 128, 193, 0.95) 37.81%, #E962FF 101.99%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+            font-size: 36px;
+            line-height: 47px;
+            
+        }
+        .name{
+            margin-bottom: 0;
+        }
+        .greetings{
+            margin-top:0;
+            font-size: 24px;
+        }
+    }
+}
