@@ -20,7 +20,7 @@ const ChatView = () => {
     const scroll = () => {
         // 👇️ scroll to bottom every time messages change
         console.log('scrolling')
-        bottomRef.current?.scrollIntoView();
+        bottomRef.current?.scrollIntoView({behaviour:'smooth'});
     }
 
     useEffect(() => {
@@ -112,17 +112,20 @@ const ChatView = () => {
        setMode(params.id);
        setChat_data([]);
        if(params.id == 'random_vocabulary'){
-        triggerRandomVocabularyInit(true);
+        triggerRandomVocabularyInit();
+       }else if(params.id == 'grammar_builder'){
+        triggerGrammarBuilder();
        }
     },[]);
-    const triggerRandomVocabularyInit = async(clearChat = false) => {
+    const triggerRandomVocabularyInit = async() => {
         try{
                 console.log('clearing chat')
-                 setChat_data([{text:'',flash:'loading',type:1,original:''}])
+                 setChat_data([...chat_data,{text:'',flash:'loading',type:1,original:''}])
              
              console.log('calling the api')
              let rand_data = await API.getRandomWord();
-             let cd = [];
+             
+             let cd = chat_data.splice(chat_data.length-1,1);
              console.log('after splice- ',cd)
            
             let meaning_ex_constructor = `<h2>${rand_data.data.word}</h2><hr/>`
@@ -150,10 +153,15 @@ const ChatView = () => {
             console.log('failed in trigger random vocabulary ', err)
         }
     }
-    //end of random word methods and api logics______________________
+    //end of random word methods and api logics**************
+    //START of gramm builder_________________________________
+    const triggerGrammarBuilder = async() => {
+
+    }
+    //END OF GRAMMER BUILDER**************
     return (
         <>
-            <div className="chat-view-wrapper" id="random_chat_parent" key={refresh} >
+            <div className="chat-view-wrapper" id="random_chat_parent"  >
                 {chat_data.map((x, index) => {
                     return <Box key={index + refresh} data={x} id={"random_chat_" + index} />
                 })}
