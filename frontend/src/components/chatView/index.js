@@ -373,12 +373,11 @@ const ChatView = () => {
                     }
                    
                      {
-                        u_correct_count === u_count && u_correct_count != 0 &&
-                        <>
+                        u_correct_count === u_count && u_correct_count != 0 && <>
                          <p className="congrats-text">
                             Congrats ! you have completed a flow 
                             </p>
-                         <button className="hintBox" onClick={()=>triggerDialogues(true,true)}> WANT TO RETRY?</button>
+                         <button className="hintBox" onClick={()=> window.location.reload()}> WANT TO RETRY?</button>
                          </>
                        
                     }
