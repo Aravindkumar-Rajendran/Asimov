@@ -48,7 +48,7 @@ def get_reply(chat):
 def correct_grammar(text):
     corrected = openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"Correct the grammar mistakes in this text:\n\n{text}",
+        prompt=f"Correct the grammar mistakes in this text:\n\n{text}\n\nCorrected:",
         temperature=0.7,
         max_tokens=128,
         top_p=1,

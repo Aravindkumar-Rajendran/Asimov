@@ -1,6 +1,21 @@
-from compare import equalize, insert_newlines
 import re
 import string
+import spacy   
+from spacy.matcher import Matcher
+from spacy.util import filter_spans
+from compare import equalize, insert_newlines
+
+nlp = spacy.load('en_core_web_sm') 
+
+pattern = [{'POS': 'VERB', 'OP': '?'},
+        {'POS': 'ADV', 'OP': '*'},
+        {'POS': 'AUX', 'OP': '*'},
+        {'POS': 'VERB', 'OP': '+'}]
+
+# instantiate a Matcher instance
+matcher = Matcher(nlp.vocab)
+matcher.add("Verb phrase", [pattern])
+
 
 def split_random_word(text_blob):
     """
@@ -40,13 +55,41 @@ def split_dialogue(dialogue_blob):
         if i == 0 or i%2 == 0:
             app_list.append(text.split(":")[-1].strip())
         else:
-            user_list.append(text.split(":")[-1].strip())
+            # phrase finding and hint adding
+            sentence = text.split(":")[-1].strip()
+            doc = nlp(sentence) 
+            # call the matcher to find matches 
+            matches = matcher(doc)
+            spans = [doc[start:end] for _, start, end in matches]
+            spans = filter_spans(spans)
+            if len(spans):
+                hint = spans[0].text
+                dashes = len(hint.split())
+                text = [doc[:spans[0].start].text, doc[spans[0].end: ].text]
+
+                user_list.append({"text": text, 
+                                "hint": hint, 
+                                "dashes": dashes})
+            else:
+                # last word
+                if doc[-1].is_punct: idx = -2
+                else: idx = -1
+
+                hint = doc[idx].text
+                dashes = len(hint.split())
+                text = [doc[:idx].text, ""]
+
+                user_list.append({"text": text, 
+                                "hint": hint, 
+                                "dashes": dashes})
+
 
     return {"app": app_list, "user": user_list}
 
 
 
 def diff_finder(in_text, out_text, width=40, margin=10, sidebyside=False, compact=False):
+    out_text = out_text.replace("\n\n", "\n").split("\n")[-1].strip()
     in_text = ''.join([i for i in in_text if i not in string.punctuation])
     out_text = ''.join([i for i in out_text if i not in string.punctuation])
 
@@ -75,8 +118,46 @@ def diff_finder(in_text, out_text, width=40, margin=10, sidebyside=False, compac
         else:
             return (s1.strip(), s2.strip())
 
-    diff = show_comparison(in_text.lower(), out_text.lower(), width=width, 
+    comp = show_comparison(in_text.lower(), out_text.lower(), width=width, 
                         margin=margin, sidebyside=sidebyside, compact=compact)
-    return diff
+
+    # [
+    # "whats wrong to ____ you",
+    # "whats wrong ___ with you"
+    # ]
+
+
+    # ["whats", "wrong", "to", "____", "you"]
+    # ["whats", "wrong", "___", "with", "you"]
+
+
+    # [
+    #     {"text":"whats wrong", strike:False}, 
+    #     {"text":"to", strike:True, replace:"with"},
+    #     {"text":"you", strike:False}
+    # ]
+
+    in_texts = comp[0].split()
+    out_texts = comp[1].split()
+    diff = []
+    text = ''
+    for t in range(len(out_texts)):
+        if "_" in out_texts[t]:
+            if text:
+                diff.append({"text":text, "strike":False})
+                text = ''
+            diff.append({'text':in_texts[t], "strike": True})
+        
+        elif "_" in in_texts[t]:
+            if text:
+                diff.append({"text":text, "strike":False})
+                text = ''
+            diff.append({"text":out_texts[t], "strike":False})
+
+        else:
+            text += " "+ in_texts[t]
+    if text:
+        diff.append({"text":text, "strike":False})
+    return [[in_text, out_text], diff]
 
 
