@@ -10,10 +10,8 @@ import logging
 app = FastAPI()
 
 
-app = FastAPI()
-
-
 class Chat(BaseModel):
+    user_id: str
     text: str 
 
 
