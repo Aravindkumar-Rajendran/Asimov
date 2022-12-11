@@ -2,15 +2,19 @@ import { useState, useRef, useEffect } from "react"
 import "./chatView.scss";
 import { ShakeCrazy as Shake } from "reshake";
 import chat_data_initial from "./data"
+import { useParams } from "react-router-dom";
+import asimoService from "../../services/asimo.service";
+const API = new asimoService();
 const ChatView = () => {
 
-    const [chat_data, setChat_data] = useState([{text:'Hi'}]);
+    const [chat_data, setChat_data] = useState([]);
+    const [Mode,setMode] = useState('')
     const [inputTxt, setInputTxt] = useState(""); //user input field/ this will be replaced by sppech to text
     const [refresh, setRefresh] = useState(true); //used to reload the dom
     const [remove, setRemove] = useState(false); //used to remove last element from dom
     const [flash, setFlash] = useState(""); //to flash statuses such as correct / wrong and to perform remove operation
     const bottomRef = useRef(null);
-   
+    const params = useParams();
 
     const scroll = () => {
         // 👇️ scroll to bottom every time messages change
@@ -42,7 +46,7 @@ const ChatView = () => {
             }
             //resetting all the status
             if (refresh != '123') {
-
+                if(dta[dta.length -1])
                 dta[dta.length - 1].state = 'correct';
                 setChat_data(dta);
                 setRefresh('123')
@@ -101,6 +105,40 @@ const ChatView = () => {
         setInputTxt("");
         setRefresh(!refresh)
     }
+    //start of logics++++++++++++++++++++++++++++
+    //start of random word methods and api logics
+    useEffect(()=>{
+       setMode(params.id);
+       setChat_data([]);
+       if(params.id == 'random_vocabulary'){
+        triggerRandomVocabularyInit();
+       }
+    },[]);
+    const triggerRandomVocabularyInit = async() => {
+        try{
+             setChat_data([...chat_data,{text:'',flash:'loading',type:1,original:''}]);
+             console.log('calling the api')
+             let rand_data = await API.getRandomWord();
+             let c_d = [
+                {
+                    text:rand_data.data.word,
+                    status:'correct',
+                    flash:'',
+                    type:1
+                },
+                {
+                    text:rand_data.data.meaning,
+                    status:'correct',
+                    flash:'',
+                    type:1
+                }
+             ]
+             setChat_data(c_d)
+        }catch(err){
+            console.log('failed in trigger random vocabulary ', err)
+        }
+    }
+    //end of random word methods and api logics______________________
     return (
         <>
             <div className="chat-view-wrapper" id="random_chat_parent" key={refresh} >
