@@ -36,7 +36,7 @@ def split_random_word(text_blob):
     meaning = text_blob[-1].strip()
     text_blob = text_blob[0].split("Word:")
     word = text_blob[-1].strip()
-    return {"word":word,"meaning": meaning, "examples": examples}
+    return {"word":word, "meaning": meaning, "examples": examples}
 
 
 
@@ -145,21 +145,21 @@ def diff_finder(in_text, out_text, width=40, margin=10, sidebyside=False, compac
     for t in range(len(out_texts)):
         if "_" in out_texts[t]:
             if text:
-                diff.append({"text":text, "strike":False})
+                diff.append({"text":text, "strike":False, "highlight": False})
                 text = ''
-            diff.append({'text':in_texts[t], "strike": True})
+            diff.append({'text':in_texts[t], "strike": True, "highlight": False})
             mistakes += 1
         
         elif "_" in in_texts[t]:
             if text:
-                diff.append({"text":text, "strike":False})
+                diff.append({"text":text, "strike":False, "highlight": False})
                 text = ''
-            diff.append({"text":out_texts[t], "strike":False})
+            diff.append({"text":out_texts[t], "strike":False, "highlight": True})
 
         else:
             text += " "+ in_texts[t]
     if text:
-        diff.append({"text":text, "strike":False})
+        diff.append({"text":text, "strike":False, "highlight": False})
     return [[in_text, out_text], diff], mistakes
 
 
