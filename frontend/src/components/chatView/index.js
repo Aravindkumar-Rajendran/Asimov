@@ -74,17 +74,19 @@ const ChatView = () => {
         }
 
     }
-    const updateLastElem = async (state, text, remove = false, flash) => {
+    const updateLastElem = async (state, text, remove = false, flash, index = 0) => {
+        console.log('update last *******',state,text,remove,flash,chat_data)
         let dta = chat_data;
-        dta[dta.length - 1] = {
-            ...dta[dta.length - 1],
-            original: dta[dta.length - 1].original,
-            text: text ? text : dta[dta.length - 1].text,
-            state: state ? state : dta[dta.length - 1].state,
-            flash: flash != undefined ? flash : dta[dta.length - 1].flash
+        dta[dta.length - 1 - index] = {
+            ...dta[dta.length - 1 - index],
+            original: dta[dta.length - 1 - index].original,
+            text: text ? text : dta[dta.length - 1 - index].text,
+            state: state ? state : dta[dta.length - 1 - index].state,
+            flash: flash != undefined ? flash : dta[dta.length - 1 - index].flash
         }
+        console.log(dta)
         setChat_data(dta)
-
+  
         if (flash != undefined) {
             setFlash(flash);
         }
@@ -161,7 +163,7 @@ const ChatView = () => {
             if (init) {
                 setChat_data([{
                     type: '1',
-                    text: 'Start Speaking / Typing something 👇️👇️👇️👇️, ASIMO will find the grammar mistakes🤘🤘',
+                    text: 'Start Speaking / Typing something 👇️👇️👇️👇️, ASIMO will find the grammar <span class="strike_grammar">moustaches</span><span class="highlight_grammar">mistakes</span>🤘🤘',
                     state: 'correct',
                     original:'',
                     flash: ""
@@ -172,7 +174,8 @@ const ChatView = () => {
                     type:2,
                     status:'correct',
                     flash:'',
-                    text:grammar_builder_input
+                    text:grammar_builder_input.toLowerCase(),
+                    original:grammar_builder_input.toLowerCase()
                 }]
                 setChat_data([...init_data,{
                     type: 1,
@@ -181,30 +184,38 @@ const ChatView = () => {
                     original:'',
                     flash: "loading"
                 }]);
-                let post_dta ={}// await API.postGrammarBuilding(grammar_builder_input);
+                let post_dta = await API.postGrammarBuilding(grammar_builder_input);
                 
                 set_grammar_builder_input("")
-                console.log({post_dta})
-                let sample_array =[{
-                    text:'HOW',
-                    strike:'true',
-                    highlight:'false'
-                } ,{
-                    text:'HIGHTLIGHT',
-                    strike:'false',
-                    highlight:'true'
-                }, {
-                    text:'ySUGUMARIDDFDSFDou',
-                    strike:'false'
-                }]
+                console.log({post_dta});
+                let sample_array = [];
+               post_dta.data.map (x => {
+                if(typeof(x) != 'string'){
+                    sample_array = x
+                }
+               })
+                // let sample_array =[{
+                //     text:'HOW',
+                //     strike:'true',
+                //     highlight:'false'
+                // } ,{
+                //     text:'HIGHTLIGHT',
+                //     strike:'false',
+                //     highlight:'true'
+                // }, {
+                //     text:'ySUGUMARIDDFDSFDou',
+                //     strike:'false'
+                // }]
                 let response_grmr = "";
                 sample_array.map(x => {
-                    let class_gr_name = '';
-                    if(x.strike == 'true') class_gr_name += " strike_grammar "
-                    if(x.highlight == 'true') class_gr_name += " highlight_grammar "
-                    
+                    if(x.text){
+                        let class_gr_name = '';
+                        if(x.strike == true) {
+                            class_gr_name += " strike_grammar ";
+                        }
+                        if(x.highlight == true) class_gr_name += " highlight_grammar "
                         response_grmr += `<span class="${class_gr_name}">${x.text}</span> `
-                    
+                    }
                 })
                 setChat_data([
                     ...init_data,{

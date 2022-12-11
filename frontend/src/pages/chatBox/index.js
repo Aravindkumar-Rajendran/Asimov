@@ -16,7 +16,7 @@ const ChatBox = () => {
   }, [])
   return (
     <div className="random-vocabulary-wrapper">
-      <span style={{ fontSize: 50, height: 26, position: 'relative', zIndex: 4 }} onClick={() => navigate("/")}>←</span>
+      <span style={{ fontSize: 50, height: 26, position: 'relative', zIndex: 4, fontWeight:900 }} onClick={() => navigate("/")}>←</span>
       &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
       {label}
       <div className="cv-wrapper">
