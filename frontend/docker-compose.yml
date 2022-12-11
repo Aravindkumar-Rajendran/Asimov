@@ -1,0 +1,12 @@
+services:
+  react:
+    build: .
+    ports:
+      - 80:80
+    networks:
+      - app
+
+
+networks:
+  app:
+    driver: bridge

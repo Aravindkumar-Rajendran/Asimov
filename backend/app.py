@@ -14,7 +14,7 @@ import random
 app = FastAPI()
 
 
-db = redis.Redis(host="0.0.0.0", port=6379)
+db = redis.Redis(host="redis", port=6379)
 
 starters = ["Hello", "Hi, there", "Hello world!", "Hey"] 
 
