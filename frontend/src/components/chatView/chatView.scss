@@ -141,3 +141,33 @@
     height:100%;
     background-color: green;
   }
+.fillBlank{
+    color:black;
+    border:1px dotted black;
+    border-radius: 3px;
+    position:relative;
+    margin:0 1rem;
+    background-color: #cdcbcb;
+    span:first-child{
+     display:inline-block;
+     padding:3px 6px;
+     font-size: 10px;
+     color:white;
+     background-color: rgb(255, 4, 4);
+     border-radius: 50%;
+     position: absolute;
+     top: -10px;
+     left: -10px;
+    }
+}
+.hintBox{
+    border: 1px solid violet;
+    color:black;
+    font-size: 20px;
+}
+.congrats-text{
+    text-align: center;
+    color:green;
+    font-weight: 900;
+    font-size: 18;
+}

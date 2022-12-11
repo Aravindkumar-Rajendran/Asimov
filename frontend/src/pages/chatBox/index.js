@@ -12,6 +12,8 @@ const ChatBox = () => {
       setLabel('Random Vocabulary')
     }else if (params.id == 'grammar_builder'){
       setLabel('Grammar Builder')
+    }else if(params.id == 'dialogues'){
+      setLabel('Dialogues')
     }
   }, [])
   return (

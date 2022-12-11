@@ -17,6 +17,12 @@ const ChatView = () => {
     const params = useParams();
     const navigate = useNavigate();
     const [grammar_builder_input,set_grammar_builder_input] = useState("")
+    const [dialogues_input,set_dialogues_input] = useState("");
+    const [dialogues_bank,set_dialoges_bank] = useState([]);
+    const [a_count,set_a_count] = useState(0);
+    const [u_count,set_u_count] = useState(0);
+    const [u_correct_count,set_u_correct_count] = useState(0);
+    const [HINT,SETHINT] = useState('Hint')
 
     const scroll = () => {
         // 👇️ scroll to bottom every time messages change
@@ -75,7 +81,6 @@ const ChatView = () => {
 
     }
     const updateLastElem = async (state, text, remove = false, flash, index = 0) => {
-        console.log('update last *******',state,text,remove,flash,chat_data)
         let dta = chat_data;
         dta[dta.length - 1 - index] = {
             ...dta[dta.length - 1 - index],
@@ -118,6 +123,8 @@ const ChatView = () => {
             triggerRandomVocabularyInit();
         } else if (params.id == 'grammar_builder') {
             triggerGrammarBuilder(true);
+        } else if (params.id == 'dialogues'){
+            triggerDialogues(true,true)
         }
     }, []);
     const triggerRandomVocabularyInit = async () => {
@@ -235,6 +242,105 @@ const ChatView = () => {
         }
     }
     //END OF GRAMMER BUILDER**************
+    //start of Dialogues
+    const IncrmentAppCount = async (index = a_count,data = null,prev_data = null) => {
+        //throw the incoming indexed app question to the ui
+        console.log({index,data})
+        prev_data = [...(prev_data?prev_data:chat_data),{
+            type:1,
+            state:'correct',
+            flash:'',
+            text: data?data.app[index] : dialogues_bank.app[index],
+            original:data?data.app[index] : dialogues_bank.app[index]
+        }]
+        setChat_data(prev_data)
+        set_a_count(index + 1);
+        if(u_count < (index+1)){
+
+            IncrementUserCount(index,data,prev_data);
+        }
+    }
+    const IncrementUserCount = async (index = u_count, data = null, prev_data = null) => {
+        if(index == (data?data.user.length:dialogues_bank.user.length) ){
+          console.log('FLOW ENEDED HERE+++++++++++')
+        }else{
+
+            prev_data = [
+                ...(prev_data?prev_data:chat_data),{
+                    type:2,
+                    state:'correct',
+                    flash:'',
+                    text: data?data.user[index].text.join(`<span class="fillBlank"> <span>${data.user[index].dashes}</span>__________</span>`) : dialogues_bank.user[index].text.join(`<span class="fillBlank"> <span>${dialogues_bank.user[index].dashes}</span>__________</span>`),
+                    original: data?data.user[index].text.join(`<span class="fillBlank"> <span>${data.user[index].dashes}</span>__________</span>`) : dialogues_bank.user[index].text.join(`<span class="fillBlank"> <span>${dialogues_bank.user[index].dashes}</span>__________</span>`)
+                }
+            ]
+            setChat_data(prev_data);
+            set_u_count(index + 1);
+        }
+    }
+    const triggerDialogues = async (init = false, process = false) => {
+        let init_data = chat_data;
+        let dia_bank_data = []; //useful only for first index
+        let prev_data = [];
+        if (init) {
+            prev_data = [{
+                type: 1,
+                text: 'Try filling in the blanks <span class="fillBlank"> <span>2</span>and learn </span>  English',
+                state: 'correct',
+                original:'',
+                flash: ""
+            },{
+                type: 1,
+                text: '',
+                state: 'correct',
+                original:'',
+                flash: "loading"
+            }]
+            setChat_data(prev_data);
+             dia_bank_data = await API.getDialogues();
+            set_dialoges_bank(dia_bank_data.data);
+            console.log({dia_bank_data})
+        }
+        if(process){
+            //we need to write new question (and inc user count) if current indexed user data is answered
+            //when writing new question (increment app count)
+            prev_data.pop();
+            if(a_count == 0){IncrmentAppCount(0,dia_bank_data.data,prev_data)}
+            else{
+                if(a_count == u_count && u_count > u_correct_count){
+                    //question triggered, but waiting for correct answer
+                    replaceBlank();
+                    
+                    console.log({dialogues_bank})
+                    if(inputTxt === dialogues_bank.user[u_count-1].hint){
+                        console.log('correct');
+
+                       updateLastElem(undefined,undefined,undefined,'success') 
+                       set_u_correct_count(1+u_correct_count);
+                       IncrmentAppCount()
+                }else{
+
+                    updateLastElem('wrong',undefined,false,'') ;
+                    //replaceBlank(true);
+                    console.log('wrong')
+                }
+                 
+
+                 }else{
+                    updateLastElem('wrong',undefined,false,'') ;
+                    //replaceBlank(true)
+                    console.log('wrong')
+                 }
+            }
+        }
+    }
+    const getHint = () => {
+        SETHINT(dialogues_bank.user[u_count -1].hint)
+        setTimeout(()=>{
+           SETHINT('Hint')
+        },1500)
+    }
+    //END OF Dialogues********************
     return (
         <>
             <div className="chat-view-wrapper" id="random_chat_parent"  >
@@ -251,8 +357,37 @@ const ChatView = () => {
                 {
                     Mode == 'grammar_builder' && <>
                         <div className="gr_builder_input">
+                           
                             <input value={grammar_builder_input} onChange={(e)=>set_grammar_builder_input(e.target.value)}/>
                             <button className="random_word_btn" onClick={() => triggerGrammarBuilder(false,true)}>➽</button>
+                        </div>
+
+
+                    </>
+                }
+                {
+                    Mode == 'dialogues' && <>
+                    {
+                        u_correct_count < u_count && 
+                        <button className="hintBox" onClick={getHint}> {HINT}</button>
+                    }
+                   
+                     {
+                        u_correct_count === u_count && u_correct_count != 0 &&
+                        <>
+                         <p className="congrats-text">
+                            Congrats ! you have completed a flow 
+                            </p>
+                         <button className="hintBox" onClick={()=>triggerDialogues(true,true)}> WANT TO RETRY?</button>
+                         </>
+                       
+                    }
+                    
+                        <div className="gr_builder_input">
+                        <input placeholder="replace blank / answer" value={inputTxt} onChange={(e) => { setInputTxt(e.target.value) }} />
+                        
+                           
+                            <button className="random_word_btn" onClick={() => triggerDialogues(false,true)}>➽</button>
                         </div>
 
 

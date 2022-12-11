@@ -15,5 +15,9 @@ class asimoService {
             text
         })
     }
+    getDialogues(){
+        const url = base_address + "/dialogue";
+        return apihelper.get(url)
+    }
 }
 export default asimoService;
