@@ -116,24 +116,26 @@ const ChatView = () => {
     },[]);
     const triggerRandomVocabularyInit = async() => {
         try{
+             
              setChat_data([...chat_data,{text:'',flash:'loading',type:1,original:''}]);
              console.log('calling the api')
              let rand_data = await API.getRandomWord();
-             let c_d = [
-                {
-                    text:rand_data.data.word,
-                    status:'correct',
-                    flash:'',
-                    type:1
-                },
-                {
-                    text:rand_data.data.meaning,
-                    status:'correct',
-                    flash:'',
-                    type:1
-                }
-             ]
-             setChat_data(c_d)
+             let cd = chat_data;
+             cd.pop();
+            cd.push({
+                text:'<span class="usinput">WORD </span><BR/>'+rand_data.data.word,
+                status:'correct',
+                flash:'',
+                type:1
+            });
+            cd.push({
+                text:`<span class="usinput">MEANING OF </i>${rand_data.data.word}</i> </span><BR/>`+ rand_data.data.meaning,
+                status:'correct',
+                flash:'',
+                type:1
+            })
+             setChat_data(cd);
+             setRefresh(!refresh)
         }catch(err){
             console.log('failed in trigger random vocabulary ', err)
         }
@@ -146,6 +148,7 @@ const ChatView = () => {
                     return <Box key={index + refresh} data={x} id={"random_chat_" + index} />
                 })}
                 <div ref={bottomRef} />
+                <button className="random_word_btn" onClick={triggerRandomVocabularyInit}>GIVE ME NEXT WORD</button>
             </div>
             <div className="controls">
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
