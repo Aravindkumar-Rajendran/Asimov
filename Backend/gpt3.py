@@ -34,3 +34,16 @@ def get_dialogue():
 def get_reply(chat):
     reply = ''
     return reply
+
+def correct_grammar(text):
+    corrected = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=f"Correct the grammar mistakes in this text:\n\n{text}",
+        temperature=0.7,
+        max_tokens=512,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+        )
+
+    return corrected.choices[0].text
