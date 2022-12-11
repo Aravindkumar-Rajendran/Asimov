@@ -14,7 +14,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home/>} />
-          <Route path="/random_vocabulary" element={<ChatBox Label="Random Vocabylary"/>} />
+          <Route path="/random_vocabulary" element={<ChatBox Label="Random Vocabulary"/>} />
           <Route path="/grammar_builder" element={<ChatBox Label="Grammar Builder"/>} />
           <Route path="/dialogues" element={<ChatBox Label="Dialogues"/>} />
           <Route path="/free_flow_conversations" element={<ChatBox Label="Free Flow Conversations"/>} />
