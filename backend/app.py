@@ -14,10 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "http://0.0.0.0:0",
-    "http://0.0.0.0",
-    "http://localhost",
-    "http://localhost:18004",
+    "http://ec2-52-201-217-155.compute-1.amazonaws.com"
 ]
 
 app.add_middleware(
