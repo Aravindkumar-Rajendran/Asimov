@@ -117,17 +117,13 @@ const ChatView = () => {
     },[]);
     const triggerRandomVocabularyInit = async(clearChat = false) => {
         try{
-             if(clearChat){
                 console.log('clearing chat')
-                setChat_data([{text:'',flash:'loading',type:1,original:''}])
-             }else{
-
-                setChat_data([...chat_data,{text:'',flash:'loading',type:1,original:''}]);
-             }
+                 setChat_data([{text:'',flash:'loading',type:1,original:''}])
+             
              console.log('calling the api')
              let rand_data = await API.getRandomWord();
-             let cd = chat_data;
-             cd.pop();
+             let cd = [];
+             console.log('after splice- ',cd)
            
             let meaning_ex_constructor = `<h2>${rand_data.data.word}</h2><hr/>`
              meaning_ex_constructor += `<span class="usinput">MEANING</span><BR/> ${rand_data.data.meaning} <br/><hr/>`;
@@ -150,7 +146,6 @@ const ChatView = () => {
            
             
              setChat_data(cd);
-             setRefresh(!refresh)
         }catch(err){
             console.log('failed in trigger random vocabulary ', err)
         }
@@ -166,7 +161,7 @@ const ChatView = () => {
                 {
                     Mode == 'random_vocabulary' && <>
                     <button className="random_word_btn" onClick={()=>triggerRandomVocabularyInit(false)}>GIVE ME NEXT WORD</button>
-                    <button className="random_word_btn" onClick={()=>{triggerRandomVocabularyInit(true)}}>CLEAR CHAT</button>
+                    
                     </>
                 }
                 <button className="random_word_btn" onClick={()=>{navigate("/")}}>GO BACK</button>
