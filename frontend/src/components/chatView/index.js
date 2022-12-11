@@ -4,12 +4,13 @@ import { ShakeCrazy as Shake } from "reshake";
 import chat_data_initial from "./data"
 const ChatView = () => {
 
-    const [chat_data, setChat_data] = useState([]);
+    const [chat_data, setChat_data] = useState([{text:'Hi'}]);
     const [inputTxt, setInputTxt] = useState(""); //user input field/ this will be replaced by sppech to text
     const [refresh, setRefresh] = useState(true); //used to reload the dom
     const [remove, setRemove] = useState(false); //used to remove last element from dom
     const [flash, setFlash] = useState(""); //to flash statuses such as correct / wrong and to perform remove operation
     const bottomRef = useRef(null);
+   
 
     const scroll = () => {
         // 👇️ scroll to bottom every time messages change
