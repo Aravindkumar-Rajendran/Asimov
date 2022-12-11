@@ -119,14 +119,12 @@ const ChatView = () => {
     },[]);
     const triggerRandomVocabularyInit = async() => {
         try{
-                console.log('clearing chat')
+                console.log('clearing chat');
+                let cd = chat_data;
                  setChat_data([...chat_data,{text:'',flash:'loading',type:1,original:''}])
              
              console.log('calling the api')
              let rand_data = await API.getRandomWord();
-             
-             let cd = chat_data.splice(chat_data.length-1,1);
-             console.log('after splice- ',cd)
            
             let meaning_ex_constructor = `<h2>${rand_data.data.word}</h2><hr/>`
              meaning_ex_constructor += `<span class="usinput">MEANING</span><BR/> ${rand_data.data.meaning} <br/><hr/>`;
@@ -149,6 +147,7 @@ const ChatView = () => {
            
             
              setChat_data(cd);
+             setRefresh(!refresh)
         }catch(err){
             console.log('failed in trigger random vocabulary ', err)
         }
