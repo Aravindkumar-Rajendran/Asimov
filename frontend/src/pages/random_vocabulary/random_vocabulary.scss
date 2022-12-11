@@ -1,0 +1,15 @@
+.random-vocabulary-wrapper {
+    background: linear-gradient(192.73deg, rgba(0, 255, 194, 0.6) -7.33%, rgba(0, 255, 194, 0) 104.58%);
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 2rem;
+    font-family: 'IBM Plex Sans', sans-serif;
+    display:flex;
+    flex-direction: column;
+     .ar-wrapper{
+        width: 100%;
+        position:fixed;
+        bottom:3.8rem;
+        left:0;
+     }
+}

@@ -1,0 +1,22 @@
+.audio-recorder-wrapper{
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:4rem;
+    .recorder-btn{
+       height:4rem;
+       width:4rem;
+       background-color: rgb(255, 157, 0);
+       border-radius: 50%;
+       z-index: 1;
+       border:5px solid yellow;
+    }
+     .background-wave{
+        position: absolute;
+        z-index:0;
+        width: 100%;
+        bottom:-4rem
+     }
+}
