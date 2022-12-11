@@ -111,13 +111,18 @@ const ChatView = () => {
        setMode(params.id);
        setChat_data([]);
        if(params.id == 'random_vocabulary'){
-        triggerRandomVocabularyInit();
+        triggerRandomVocabularyInit(true);
        }
     },[]);
-    const triggerRandomVocabularyInit = async() => {
+    const triggerRandomVocabularyInit = async(clearChat = false) => {
         try{
-             
-             setChat_data([...chat_data,{text:'',flash:'loading',type:1,original:''}]);
+             if(clearChat){
+                console.log('clearing chat')
+                setChat_data([{text:'',flash:'loading',type:1,original:''}])
+             }else{
+
+                setChat_data([...chat_data,{text:'',flash:'loading',type:1,original:''}]);
+             }
              console.log('calling the api')
              let rand_data = await API.getRandomWord();
              let cd = chat_data;
@@ -148,7 +153,8 @@ const ChatView = () => {
                     return <Box key={index + refresh} data={x} id={"random_chat_" + index} />
                 })}
                 <div ref={bottomRef} />
-                <button className="random_word_btn" onClick={triggerRandomVocabularyInit}>GIVE ME NEXT WORD</button>
+                <button className="random_word_btn" onClick={()=>triggerRandomVocabularyInit(false)}>GIVE ME NEXT WORD</button>
+                <button className="random_word_btn" onClick={()=>{triggerRandomVocabularyInit(true)}}>CLEAR CHAT</button>
             </div>
             <div className="controls">
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
