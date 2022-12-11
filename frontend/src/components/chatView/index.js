@@ -3,12 +3,12 @@ import "./chatView.scss";
 import { ShakeCrazy as Shake } from "reshake";
 import chat_data_initial from "./data"
 const ChatView = () => {
-    
-    const [chat_data, setChat_data] = useState(chat_data_initial);
+
+    const [chat_data, setChat_data] = useState([]);
     const [inputTxt, setInputTxt] = useState(""); //user input field/ this will be replaced by sppech to text
     const [refresh, setRefresh] = useState(true); //used to reload the dom
     const [remove, setRemove] = useState(false); //used to remove last element from dom
-    const [flash,setFlash] = useState(""); //to flash statuses such as correct / wrong and to perform remove operation
+    const [flash, setFlash] = useState(""); //to flash statuses such as correct / wrong and to perform remove operation
     const bottomRef = useRef(null);
 
     const scroll = () => {
@@ -16,7 +16,7 @@ const ChatView = () => {
         console.log('scrolling')
         bottomRef.current?.scrollIntoView();
     }
-   
+
     useEffect(() => {
         // 👇️ scroll to bottom every time messages change
         scroll()
@@ -25,26 +25,26 @@ const ChatView = () => {
         const timer = window.setTimeout(() => {
             let dta = chat_data;
             if (remove == true) {
-               
+
                 dta.pop();
                 setChat_data(dta);
                 setRemove(false);
 
             }
-            if (['loading','success','failure'].includes(flash)){
-                console.log({flash})
-                if(flash !== 'loading')//loading flashes will be infinite
-                dta[dta.length-1].flash = '';
+            if (['loading', 'success', 'failure'].includes(flash)) {
+                console.log({ flash })
+                if (flash !== 'loading')//loading flashes will be infinite
+                    dta[dta.length - 1].flash = '';
                 setChat_data(dta);
-                if(flash !== 'loading')//loading flashes will be infinite
-                setFlash("")
+                if (flash !== 'loading')//loading flashes will be infinite
+                    setFlash("")
             }
             //resetting all the status
-            if(refresh != '123'){
-                
-           dta[dta.length-1].state = 'correct';
-           setChat_data(dta);
-           setRefresh('123')
+            if (refresh != '123') {
+
+                dta[dta.length - 1].state = 'correct';
+                setChat_data(dta);
+                setRefresh('123')
             }
 
 
@@ -52,33 +52,33 @@ const ChatView = () => {
         return () => {
             window.clearTimeout(timer);
         };
-    }, [remove,  chat_data, flash,refresh]);
-    const replaceBlank = (clear=false) => {
+    }, [remove, chat_data, flash, refresh]);
+    const replaceBlank = (clear = false) => {
         let dta = chat_data;
-        if(clear){
+        if (clear) {
             let text_to_change = dta[dta.length - 1].original;
             updateLastElem('correct', text_to_change)
             setInputTxt("")
-        }else{
+        } else {
             let text_to_change = dta[dta.length - 1].original;
             let changed = text_to_change.replace(/__________/g, '<span class="usinput"> ' + inputTxt + ' </span>');
             updateLastElem('correct', changed)
             setInputTxt("")
         }
-       
+
     }
-    const updateLastElem = async (state, text, remove = false,flash) => {
+    const updateLastElem = async (state, text, remove = false, flash) => {
         let dta = chat_data;
         dta[dta.length - 1] = {
             ...dta[dta.length - 1],
             original: dta[dta.length - 1].original,
             text: text ? text : dta[dta.length - 1].text,
             state: state ? state : dta[dta.length - 1].state,
-            flash:flash!= undefined?flash:dta[dta.length -1].flash
+            flash: flash != undefined ? flash : dta[dta.length - 1].flash
         }
         setChat_data(dta)
-       
-        if(flash != undefined){
+
+        if (flash != undefined) {
             setFlash(flash);
         }
         setRemove(remove)
@@ -91,12 +91,12 @@ const ChatView = () => {
     const insertEntry = (type = 2) => {
         let newElement = {
             type,
-            original:inputTxt,
-            text:inputTxt,
-            state:'correct',
-            flash:''
+            original: inputTxt,
+            text: inputTxt,
+            state: 'correct',
+            flash: ''
         }
-        setChat_data([...chat_data,newElement]);
+        setChat_data([...chat_data, newElement]);
         setInputTxt("");
         setRefresh(!refresh)
     }
@@ -104,34 +104,34 @@ const ChatView = () => {
         <>
             <div className="chat-view-wrapper" id="random_chat_parent" key={refresh} >
                 {chat_data.map((x, index) => {
-                    return <Box key={index+refresh} data={x} id={"random_chat_" + index} />
+                    return <Box key={index + refresh} data={x} id={"random_chat_" + index} />
                 })}
                 <div ref={bottomRef} />
             </div>
             <div className="controls">
-                <div style={{ display: 'flex',flexDirection:'column' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <input placeholder="replace blank / answer" value={inputTxt} onChange={(e) => { setInputTxt(e.target.value) }} />
                     <div onClick={() => replaceBlank()}> Replace text</div>
                     <div onClick={() => replaceBlank(true)}> Reset text</div>
                     <div onClick={() => insertEntry()}>ANSWER</div>
                     <div onClick={() => insertEntry(1)}>INSERT QUESTION</div>
                 </div>
-                
+
                 <div onClick={() => updateLastElem('wrong', undefined, true)}>Make Last component wrong and remove</div>
                 <div onClick={() => updateLastElem('wrong', undefined)}>Make Last component wrong and dont remove</div>
                 <div onClick={insertElement}>insert Random Element</div>
-                <div onClick={()=>updateLastElem(undefined,undefined,undefined,'loading')}>SET lOADING</div>
-                <div onClick={()=>updateLastElem(undefined,undefined,false,'success')}>SET SUCCESS</div>
-                <div onClick={()=>updateLastElem(undefined,undefined,undefined,'failure')}>SET FAILURE </div>
-                <div onClick={()=>updateLastElem(undefined,undefined,undefined,'')}>RESSET loading</div>
-                <div onClick={()=>setRefresh(!refresh)}>SCROLL TO LAST</div>
+                <div onClick={() => updateLastElem(undefined, undefined, undefined, 'loading')}>SET lOADING</div>
+                <div onClick={() => updateLastElem(undefined, undefined, false, 'success')}>SET SUCCESS</div>
+                <div onClick={() => updateLastElem(undefined, undefined, undefined, 'failure')}>SET FAILURE </div>
+                <div onClick={() => updateLastElem(undefined, undefined, undefined, '')}>RESSET loading</div>
+                <div onClick={() => setRefresh(!refresh)}>SCROLL TO LAST</div>
             </div>
 
         </>
 
     )
 }
-const Box = ({ data, id,refresh }) => {
+const Box = ({ data, id, refresh }) => {
     const getStyle = (type, state) => {
         let styleObj = {};
         styleObj.alignSelf = (type === 1) ? 'start' : 'end';
@@ -157,16 +157,16 @@ const Box = ({ data, id,refresh }) => {
         return styleObj;
     }
     const FetchFlashMessage = () => {
-          let img_src = "";
-          let randomNumber = Math.round(Math.random()*5)
-          if(data.flash == 'success'){
-              img_src = 'success_'+4+".gif"
-          }else if(data.flash == 'failure'){
-            img_src = 'failure_'+3+".gif"
-          }else if(data.flash == 'loading'){
-            img_src = 'loading_'+0+".gif"
-          }
-         return <img className="flash_img" src={img_src}></img>
+        let img_src = "";
+        let randomNumber = Math.round(Math.random() * 5)
+        if (data.flash == 'success') {
+            img_src = 'success_' + 4 + ".gif"
+        } else if (data.flash == 'failure') {
+            img_src = 'failure_' + 3 + ".gif"
+        } else if (data.flash == 'loading') {
+            img_src = 'loading_' + 0 + ".gif"
+        }
+        return <img className="flash_img" src={img_src}></img>
     }
     return (
 
@@ -175,12 +175,12 @@ const Box = ({ data, id,refresh }) => {
 
             </div>
             {
-                ['loading','success','failure'].includes(data.flash)  && 
-                <div className="flashMessage" style={getStyle(data.type,data.state)}>
-                    <FetchFlashMessage/>
-               </div>
+                ['loading', 'success', 'failure'].includes(data.flash) &&
+                <div className="flashMessage" style={getStyle(data.type, data.state)}>
+                    <FetchFlashMessage />
+                </div>
             }
-            
+
             <Shake
                 h={5}
                 v={5}
@@ -194,7 +194,7 @@ const Box = ({ data, id,refresh }) => {
                 active={data.state === 'wrong'}>
                 <div dangerouslySetInnerHTML={{ __html: data.text }}></div>
             </Shake>
-         
+
         </div>
     )
 }
