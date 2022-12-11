@@ -1,0 +1,24 @@
+.random-vocabulary-wrapper {
+    background: linear-gradient(192.73deg, rgba(0, 255, 194, 0.6) -7.33%, rgba(0, 255, 194, 0) 104.58%);
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 2rem;
+    font-family: 'IBM Plex Sans', sans-serif;
+    display:flex;
+    flex-direction: column;
+    .cv-wrapper{
+      position:absolute;
+      left:0;
+      top:0;
+      height:calc(100vh);
+      width: 100%;
+   }
+     .ar-wrapper{
+      position:absolute;
+        bottom:3rem;
+        width: 100%;
+        height:3rem;
+        left:0;
+     }
+}
