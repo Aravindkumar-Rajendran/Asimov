@@ -14,7 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "http://ec2-52-201-217-155.compute-1.amazonaws.com"
+    "http://ec2-52-201-217-155.compute-1.amazonaws.com",
+    "http://52.201.217.155/"
 ]
 
 app.add_middleware(
@@ -26,7 +27,7 @@ app.add_middleware(
 )
 
 
-db = redis.Redis(host="redis", port=6379)
+db = redis.Redis(host="redis", port=6379, charset="utf-8", decode_responses=True)
 
 starters = ["Hello", "Hi, there", "Hello world!", "Hey"] 
 
@@ -77,6 +78,6 @@ def grammar_corrections(chat: Chat):
     reply = correct_grammar(chat.text)
     diff, mistakes = diff_finder(chat.text, reply)
     if db.hexists(chat.user_id, "mistakes"):
-        mistakes += db.hget(chat.user_id, "mistakes")
+        mistakes += int(db.hget(chat.user_id, "mistakes"))
     hsetex(db, chat.user_id, "mistakes", mistakes, 1800)
     return diff
