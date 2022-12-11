@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react"
 import "./chatView.scss";
 import { ShakeCrazy as Shake } from "reshake";
 import chat_data_initial from "./data"
-import { useParams } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
 import asimoService from "../../services/asimo.service";
 const API = new asimoService();
 const ChatView = () => {
@@ -15,6 +15,7 @@ const ChatView = () => {
     const [flash, setFlash] = useState(""); //to flash statuses such as correct / wrong and to perform remove operation
     const bottomRef = useRef(null);
     const params = useParams();
+    const navigate = useNavigate();
 
     const scroll = () => {
         // 👇️ scroll to bottom every time messages change
@@ -127,18 +128,27 @@ const ChatView = () => {
              let rand_data = await API.getRandomWord();
              let cd = chat_data;
              cd.pop();
+           
+            let meaning_ex_constructor = `<h2>${rand_data.data.word}</h2><hr/>`
+             meaning_ex_constructor += `<span class="usinput">MEANING</span><BR/> ${rand_data.data.meaning} <br/><hr/>`;
+            console.log(rand_data.data.examples)
+            if(rand_data.data.examples){
+
+                meaning_ex_constructor += `<span class="usinput">EXAMPLES</span><br/>`
+                rand_data.data.examples.map((x,index) => {
+                    let y = x.replace(/\n/g, "<br />");
+                    meaning_ex_constructor += `<span class="usinput"> </span>  ${y}`
+                })
+            }
+          
             cd.push({
-                text:'<span class="usinput">WORD </span><BR/>'+rand_data.data.word,
-                status:'correct',
-                flash:'',
-                type:1
-            });
-            cd.push({
-                text:`<span class="usinput">MEANING OF </i>${rand_data.data.word}</i> </span><BR/>`+ rand_data.data.meaning,
+                text:meaning_ex_constructor,
                 status:'correct',
                 flash:'',
                 type:1
             })
+           
+            
              setChat_data(cd);
              setRefresh(!refresh)
         }catch(err){
@@ -153,8 +163,13 @@ const ChatView = () => {
                     return <Box key={index + refresh} data={x} id={"random_chat_" + index} />
                 })}
                 <div ref={bottomRef} />
-                <button className="random_word_btn" onClick={()=>triggerRandomVocabularyInit(false)}>GIVE ME NEXT WORD</button>
-                <button className="random_word_btn" onClick={()=>{triggerRandomVocabularyInit(true)}}>CLEAR CHAT</button>
+                {
+                    Mode == 'random_vocabulary' && <>
+                    <button className="random_word_btn" onClick={()=>triggerRandomVocabularyInit(false)}>GIVE ME NEXT WORD</button>
+                    <button className="random_word_btn" onClick={()=>{triggerRandomVocabularyInit(true)}}>CLEAR CHAT</button>
+                    </>
+                }
+                <button className="random_word_btn" onClick={()=>{navigate("/")}}>GO BACK</button>
             </div>
             <div className="controls">
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
