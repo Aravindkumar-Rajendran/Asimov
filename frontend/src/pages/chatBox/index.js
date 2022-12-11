@@ -10,6 +10,8 @@ const ChatBox = () => {
   useEffect(() => {
     if (params.id == 'random_vocabulary') {
       setLabel('Random Vocabulary')
+    }else if (params.id == 'grammar_builder'){
+      setLabel('Grammar Builder')
     }
   }, [])
   return (

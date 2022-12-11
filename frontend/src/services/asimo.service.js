@@ -8,5 +8,12 @@ class asimoService {
         console.log('reading the url-',url)
         return apihelper.get(url)
     }
+    postGrammarBuilding(text){
+        const url = base_address + "/grammar";
+        return apihelper.post(url,{
+            user_id:Math.round(Math.random()*1000000),
+            text
+        })
+    }
 }
 export default asimoService;

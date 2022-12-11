@@ -2,13 +2,13 @@ import { useState, useRef, useEffect } from "react"
 import "./chatView.scss";
 import { ShakeCrazy as Shake } from "reshake";
 import chat_data_initial from "./data"
-import {  useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import asimoService from "../../services/asimo.service";
 const API = new asimoService();
 const ChatView = () => {
 
     const [chat_data, setChat_data] = useState([]);
-    const [Mode,setMode] = useState('')
+    const [Mode, setMode] = useState('')
     const [inputTxt, setInputTxt] = useState(""); //user input field/ this will be replaced by sppech to text
     const [refresh, setRefresh] = useState(true); //used to reload the dom
     const [remove, setRemove] = useState(false); //used to remove last element from dom
@@ -16,11 +16,12 @@ const ChatView = () => {
     const bottomRef = useRef(null);
     const params = useParams();
     const navigate = useNavigate();
+    const [grammar_builder_input,set_grammar_builder_input] = useState("")
 
     const scroll = () => {
         // 👇️ scroll to bottom every time messages change
         console.log('scrolling')
-        bottomRef.current?.scrollIntoView({behaviour:'smooth'});
+        bottomRef.current?.scrollIntoView({ behaviour: 'smooth' });
     }
 
     useEffect(() => {
@@ -47,8 +48,8 @@ const ChatView = () => {
             }
             //resetting all the status
             if (refresh != '123') {
-                if(dta[dta.length -1])
-                dta[dta.length - 1].state = 'correct';
+                if (dta[dta.length - 1])
+                    dta[dta.length - 1].state = 'correct';
                 setChat_data(dta);
                 setRefresh('123')
             }
@@ -108,54 +109,116 @@ const ChatView = () => {
     }
     //start of logics++++++++++++++++++++++++++++
     //start of random word methods and api logics
-    useEffect(()=>{
-       setMode(params.id);
-       setChat_data([]);
-       if(params.id == 'random_vocabulary'){
-        triggerRandomVocabularyInit();
-       }else if(params.id == 'grammar_builder'){
-        triggerGrammarBuilder();
-       }
-    },[]);
-    const triggerRandomVocabularyInit = async() => {
-        try{
-                console.log('clearing chat');
-                let cd = chat_data;
-                 setChat_data([...chat_data,{text:'',flash:'loading',type:1,original:''}])
-             
-             console.log('calling the api')
-             let rand_data = await API.getRandomWord();
-           
-            let meaning_ex_constructor = `<h2>${rand_data.data.word}</h2><hr/>`
-             meaning_ex_constructor += `<span class="usinput">MEANING</span><BR/> ${rand_data.data.meaning} <br/><hr/>`;
-            console.log(rand_data.data.examples)
-            if(rand_data.data.examples){
+    useEffect(() => {
+        setMode(params.id);
+        setChat_data([]);
+        if (params.id == 'random_vocabulary') {
+            triggerRandomVocabularyInit();
+        } else if (params.id == 'grammar_builder') {
+            triggerGrammarBuilder(true);
+        }
+    }, []);
+    const triggerRandomVocabularyInit = async () => {
+        try {
+            console.log('clearing chat');
+            let cd = chat_data;
+            setChat_data([...chat_data, { text: '', flash: 'loading', type: 1, original: '' }])
 
-                meaning_ex_constructor += `<span class="usinput">EXAMPLES</span><br/>`
-                rand_data.data.examples.map((x,index) => {
+
+            let rand_data = await API.getRandomWord();
+
+            let meaning_ex_constructor = `<h2>${rand_data.data.word}</h2><hr/>`
+            meaning_ex_constructor += `<span class="usinput">MEANING</span><BR/> ${rand_data.data.meaning} <br/><hr/>`;
+            console.log(rand_data.data.examples)
+            if (rand_data.data.examples) {
+
+                meaning_ex_constructor += `<span class="usinput">EXAMPLE(S)</span><br/>`
+                rand_data.data.examples.map((x, index) => {
                     let y = x.replace(/\n/g, "<br />");
                     meaning_ex_constructor += `<span class="usinput"> </span>  ${y}`
                 })
             }
-          
+
             cd.push({
-                text:meaning_ex_constructor,
-                status:'correct',
-                flash:'',
-                type:1
+                text: meaning_ex_constructor,
+                status: 'correct',
+                flash: '',
+                type: 1
             })
-           
-            
-             setChat_data(cd);
-             setRefresh(!refresh)
-        }catch(err){
+
+
+            setChat_data(cd);
+            setRefresh(!refresh)
+        } catch (err) {
             console.log('failed in trigger random vocabulary ', err)
         }
     }
     //end of random word methods and api logics**************
     //START of gramm builder_________________________________
-    const triggerGrammarBuilder = async() => {
+    const triggerGrammarBuilder = async (init = false,insertWord = false) => {
+        try {
+            let init_data = chat_data;
+            if (init) {
+                setChat_data([{
+                    type: '1',
+                    text: 'Start Speaking / Typing something 👇️👇️👇️👇️, ASIMO will find the grammar mistakes🤘🤘',
+                    state: 'correct',
+                    original:'',
+                    flash: ""
+                }])
+            }
+            if(insertWord){
+                init_data = [...init_data,{
+                    type:2,
+                    status:'correct',
+                    flash:'',
+                    text:grammar_builder_input
+                }]
+                setChat_data([...init_data,{
+                    type: 1,
+                    text: '',
+                    state: 'correct',
+                    original:'',
+                    flash: "loading"
+                }]);
+                let post_dta = {}//await API.postGrammarBuilding(grammar_builder_input);
+                
+                set_grammar_builder_input("")
+                console.log({post_dta})
+                let sample_array =[{
+                    text:'HOW',
+                    strike:'true'
+                } ,{
+                    text:'are',
+                    strike:'true'
+                }, {
+                    text:'you',
+                    strike:'false'
+                }]
+                let response_grmr = "";
+                sample_array.map(x => {
+                    if(x.strike == 'true'){
+                        response_grmr += `<span class="usinput"><strike>${x.text}</strike></span> `
+                    }else{
+                        response_grmr += `<span>${x.text}</span> `
+                    }
+                })
+                setChat_data([
+                    ...init_data,{
+                    type: 1,
+                    text: response_grmr,
+                    state: 'correct',
+                    original:'',
+                    flash: ""
+                    }
+                ])
+                setRefresh(!refresh)
 
+            }
+
+        } catch (err) {
+
+        }
     }
     //END OF GRAMMER BUILDER**************
     return (
@@ -167,11 +230,21 @@ const ChatView = () => {
                 <div ref={bottomRef} />
                 {
                     Mode == 'random_vocabulary' && <>
-                    <button className="random_word_btn" onClick={()=>triggerRandomVocabularyInit(false)}>GIVE ME NEXT WORD</button>
-                    
+                        <button className="random_word_btn" onClick={() => triggerRandomVocabularyInit(false)}>GIVE ME NEXT WORD</button>
+
                     </>
                 }
-                <button className="random_word_btn" onClick={()=>{navigate("/")}}>GO BACK</button>
+                {
+                    Mode == 'grammar_builder' && <>
+                        <div className="gr_builder_input">
+                            <input value={grammar_builder_input} onChange={(e)=>set_grammar_builder_input(e.target.value)}/>
+                            <button className="random_word_btn" onClick={() => triggerGrammarBuilder(false,true)}>➽</button>
+                        </div>
+
+
+                    </>
+                }
+                <button className="random_word_btn" onClick={() => { navigate("/") }}>GO BACK</button>
             </div>
             <div className="controls">
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
