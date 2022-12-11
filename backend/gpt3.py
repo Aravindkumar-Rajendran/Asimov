@@ -35,7 +35,7 @@ def get_dialogue():
 def get_reply(chat):
     reply =  openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"Reply the text like a human:\n{chat}",
+        prompt=f"Reply to the text like a human:\n\n{chat}\nYou:",
         temperature=0.5,
         max_tokens=128,
         top_p=1,
