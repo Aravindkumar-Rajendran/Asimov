@@ -9,12 +9,27 @@ import logging
 import redis
 import json
 import random
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = [
+    "http://0.0.0.0:0",
+    "http://0.0.0.0",
+    "http://localhost",
+    "http://localhost:18004",
+]
 
-db = redis.Redis(host="0.0.0.0", port=6379)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+db = redis.Redis(host="redis", port=6379)
 
 starters = ["Hello", "Hi, there", "Hello world!", "Hey"] 
 
