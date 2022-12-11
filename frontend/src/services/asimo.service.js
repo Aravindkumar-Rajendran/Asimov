@@ -8,16 +8,23 @@ class asimoService {
         console.log('reading the url-',url)
         return apihelper.get(url)
     }
-    postGrammarBuilding(text){
+    postGrammarBuilding(text,user_id){
         const url = base_address + "/grammar";
         return apihelper.post(url,{
-            user_id:Math.round(Math.random()*1000000),
+            user_id,
             text
         })
     }
     getDialogues(){
         const url = base_address + "/dialogue";
         return apihelper.get(url)
+    }
+    getFreeConversation(text,user_id){
+        const url = base_address + "/conversation";
+        return apihelper.post(url,{
+            user_id,
+            text
+        })
     }
 }
 export default asimoService;

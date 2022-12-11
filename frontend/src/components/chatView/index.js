@@ -16,13 +16,14 @@ const ChatView = () => {
     const bottomRef = useRef(null);
     const params = useParams();
     const navigate = useNavigate();
-    const [grammar_builder_input,set_grammar_builder_input] = useState("")
-    const [dialogues_input,set_dialogues_input] = useState("");
-    const [dialogues_bank,set_dialoges_bank] = useState([]);
-    const [a_count,set_a_count] = useState(0);
-    const [u_count,set_u_count] = useState(0);
-    const [u_correct_count,set_u_correct_count] = useState(0);
-    const [HINT,SETHINT] = useState('Hint')
+    const [grammar_builder_input, set_grammar_builder_input] = useState("")
+    const [dialogues_input, set_dialogues_input] = useState("");
+    const [dialogues_bank, set_dialoges_bank] = useState([]);
+    const [a_count, set_a_count] = useState(0);
+    const [u_count, set_u_count] = useState(0);
+    const [u_correct_count, set_u_correct_count] = useState(0);
+    const [HINT, SETHINT] = useState('Hint');
+    const [user_id, setUser_id] = useState(Math.round(Math.random() * 100000))
 
     const scroll = () => {
         // 👇️ scroll to bottom every time messages change
@@ -91,7 +92,7 @@ const ChatView = () => {
         }
         console.log(dta)
         setChat_data(dta)
-  
+
         if (flash != undefined) {
             setFlash(flash);
         }
@@ -123,8 +124,10 @@ const ChatView = () => {
             triggerRandomVocabularyInit();
         } else if (params.id == 'grammar_builder') {
             triggerGrammarBuilder(true);
-        } else if (params.id == 'dialogues'){
-            triggerDialogues(true,true)
+        } else if (params.id == 'dialogues') {
+            triggerDialogues(true, true)
+        } else if (params.id == 'free_flow_conversations') {
+            triggerFreeFlow(true, true)
         }
     }, []);
     const triggerRandomVocabularyInit = async () => {
@@ -164,7 +167,7 @@ const ChatView = () => {
     }
     //end of random word methods and api logics**************
     //START of gramm builder_________________________________
-    const triggerGrammarBuilder = async (init = false,insertWord = false) => {
+    const triggerGrammarBuilder = async (init = false, insertWord = false) => {
         try {
             let init_data = chat_data;
             if (init) {
@@ -172,35 +175,35 @@ const ChatView = () => {
                     type: '1',
                     text: 'Start Speaking / Typing something 👇️👇️👇️👇️, ASIMO will find the grammar <span class="strike_grammar">moustaches</span><span class="highlight_grammar">mistakes</span>🤘🤘',
                     state: 'correct',
-                    original:'',
+                    original: '',
                     flash: ""
                 }])
             }
-            if(insertWord){
-                init_data = [...init_data,{
-                    type:2,
-                    status:'correct',
-                    flash:'',
-                    text:grammar_builder_input.toLowerCase(),
-                    original:grammar_builder_input.toLowerCase()
+            if (insertWord) {
+                init_data = [...init_data, {
+                    type: 2,
+                    status: 'correct',
+                    flash: '',
+                    text: grammar_builder_input.toLowerCase(),
+                    original: grammar_builder_input.toLowerCase()
                 }]
-                setChat_data([...init_data,{
+                setChat_data([...init_data, {
                     type: 1,
                     text: '',
                     state: 'correct',
-                    original:'',
+                    original: '',
                     flash: "loading"
                 }]);
-                let post_dta = await API.postGrammarBuilding(grammar_builder_input);
-                
+                let post_dta = await API.postGrammarBuilding(grammar_builder_input, user_id);
+
                 set_grammar_builder_input("")
-                console.log({post_dta});
+                console.log({ post_dta });
                 let sample_array = [];
-               post_dta.data.map (x => {
-                if(typeof(x) != 'string'){
-                    sample_array = x
-                }
-               })
+                post_dta.data.map(x => {
+                    if (typeof (x) != 'string') {
+                        sample_array = x
+                    }
+                })
                 // let sample_array =[{
                 //     text:'HOW',
                 //     strike:'true',
@@ -215,22 +218,22 @@ const ChatView = () => {
                 // }]
                 let response_grmr = "";
                 sample_array.map(x => {
-                    if(x.text){
+                    if (x.text) {
                         let class_gr_name = '';
-                        if(x.strike == true) {
+                        if (x.strike == true) {
                             class_gr_name += " strike_grammar ";
                         }
-                        if(x.highlight == true) class_gr_name += " highlight_grammar "
+                        if (x.highlight == true) class_gr_name += " highlight_grammar "
                         response_grmr += `<span class="${class_gr_name}">${x.text}</span> `
                     }
                 })
                 setChat_data([
-                    ...init_data,{
-                    type: 1,
-                    text: response_grmr,
-                    state: 'correct',
-                    original:'',
-                    flash: ""
+                    ...init_data, {
+                        type: 1,
+                        text: response_grmr,
+                        state: 'correct',
+                        original: '',
+                        flash: ""
                     }
                 ])
                 setRefresh(!refresh)
@@ -243,35 +246,35 @@ const ChatView = () => {
     }
     //END OF GRAMMER BUILDER**************
     //start of Dialogues
-    const IncrmentAppCount = async (index = a_count,data = null,prev_data = null) => {
+    const IncrmentAppCount = async (index = a_count, data = null, prev_data = null) => {
         //throw the incoming indexed app question to the ui
-        console.log({index,data})
-        prev_data = [...(prev_data?prev_data:chat_data),{
-            type:1,
-            state:'correct',
-            flash:'',
-            text: data?data.app[index] : dialogues_bank.app[index],
-            original:data?data.app[index] : dialogues_bank.app[index]
+        console.log({ index, data })
+        prev_data = [...(prev_data ? prev_data : chat_data), {
+            type: 1,
+            state: 'correct',
+            flash: '',
+            text: data ? data.app[index] : dialogues_bank.app[index],
+            original: data ? data.app[index] : dialogues_bank.app[index]
         }]
         setChat_data(prev_data)
         set_a_count(index + 1);
-        if(u_count < (index+1)){
+        if (u_count < (index + 1)) {
 
-            IncrementUserCount(index,data,prev_data);
+            IncrementUserCount(index, data, prev_data);
         }
     }
     const IncrementUserCount = async (index = u_count, data = null, prev_data = null) => {
-        if(index == (data?data.user.length:dialogues_bank.user.length) ){
-          console.log('FLOW ENEDED HERE+++++++++++')
-        }else{
+        if (index == (data ? data.user.length : dialogues_bank.user.length)) {
+            console.log('FLOW ENEDED HERE+++++++++++')
+        } else {
 
             prev_data = [
-                ...(prev_data?prev_data:chat_data),{
-                    type:2,
-                    state:'correct',
-                    flash:'',
-                    text: data?data.user[index].text.join(`<span class="fillBlank"> <span>${data.user[index].dashes}</span>__________</span>`) : dialogues_bank.user[index].text.join(`<span class="fillBlank"> <span>${dialogues_bank.user[index].dashes}</span>__________</span>`),
-                    original: data?data.user[index].text.join(`<span class="fillBlank"> <span>${data.user[index].dashes}</span>__________</span>`) : dialogues_bank.user[index].text.join(`<span class="fillBlank"> <span>${dialogues_bank.user[index].dashes}</span>__________</span>`)
+                ...(prev_data ? prev_data : chat_data), {
+                    type: 2,
+                    state: 'correct',
+                    flash: '',
+                    text: data ? data.user[index].text.join(`<span class="fillBlank"> <span>${data.user[index].dashes}</span>__________</span>`) : dialogues_bank.user[index].text.join(`<span class="fillBlank"> <span>${dialogues_bank.user[index].dashes}</span>__________</span>`),
+                    original: data ? data.user[index].text.join(`<span class="fillBlank"> <span>${data.user[index].dashes}</span>__________</span>`) : dialogues_bank.user[index].text.join(`<span class="fillBlank"> <span>${dialogues_bank.user[index].dashes}</span>__________</span>`)
                 }
             ]
             setChat_data(prev_data);
@@ -287,60 +290,129 @@ const ChatView = () => {
                 type: 1,
                 text: 'Try filling in the blanks <span class="fillBlank"> <span>2</span>and learn </span>  English',
                 state: 'correct',
-                original:'',
+                original: '',
                 flash: ""
-            },{
+            }, {
                 type: 1,
                 text: '',
                 state: 'correct',
-                original:'',
+                original: '',
                 flash: "loading"
             }]
             setChat_data(prev_data);
-             dia_bank_data = await API.getDialogues();
+            dia_bank_data = await API.getDialogues();
             set_dialoges_bank(dia_bank_data.data);
-            console.log({dia_bank_data})
+            console.log({ dia_bank_data })
         }
-        if(process){
+        if (process) {
             //we need to write new question (and inc user count) if current indexed user data is answered
             //when writing new question (increment app count)
             prev_data.pop();
-            if(a_count == 0){IncrmentAppCount(0,dia_bank_data.data,prev_data)}
-            else{
-                if(a_count == u_count && u_count > u_correct_count){
+            if (a_count == 0) { IncrmentAppCount(0, dia_bank_data.data, prev_data) }
+            else {
+                if (a_count == u_count && u_count > u_correct_count) {
                     //question triggered, but waiting for correct answer
                     replaceBlank();
-                    
-                    console.log({dialogues_bank})
-                    if(inputTxt === dialogues_bank.user[u_count-1].hint){
+
+                    console.log({ dialogues_bank })
+                    if (inputTxt === dialogues_bank.user[u_count - 1].hint) {
                         console.log('correct');
 
-                       updateLastElem(undefined,undefined,undefined,'success') 
-                       set_u_correct_count(1+u_correct_count);
-                       IncrmentAppCount()
-                }else{
+                        updateLastElem(undefined, undefined, undefined, 'success')
+                        set_u_correct_count(1 + u_correct_count);
+                        IncrmentAppCount()
+                    } else {
 
-                    updateLastElem('wrong',undefined,false,'') ;
-                    //replaceBlank(true);
-                    console.log('wrong')
-                }
-                 
+                        updateLastElem('wrong', undefined, false, '');
+                        //replaceBlank(true);
+                        console.log('wrong')
+                    }
 
-                 }else{
-                    updateLastElem('wrong',undefined,false,'') ;
+
+                } else {
+                    updateLastElem('wrong', undefined, false, '');
                     //replaceBlank(true)
                     console.log('wrong')
-                 }
+                }
             }
         }
     }
     const getHint = () => {
-        SETHINT(dialogues_bank.user[u_count -1].hint)
-        setTimeout(()=>{
-           SETHINT('Hint')
-        },1500)
+        SETHINT(dialogues_bank.user[u_count - 1].hint)
+        setTimeout(() => {
+            SETHINT('Hint')
+        }, 1500)
     }
     //END OF Dialogues********************
+    //start of converstaions......
+    const triggerFreeFlow = async (init) => {
+        try {
+            let prev_data = chat_data;
+
+            if (init) {
+                prev_data = [{
+                    type: 1,
+                    text: 'Ask me anything 😃, lets talk for sometime😁😁?',
+                    state: 'correct',
+                    original: '',
+                    flash: ""
+                }]
+                setChat_data(prev_data);
+               
+            } else {
+                prev_data = [
+                    ...prev_data,
+                    {
+                        type: 2,
+                        text: inputTxt,
+                        state: 'correct',
+                        original: inputTxt,
+                        flash: ""
+                    }, {
+                        type: 1,
+                        text: "",
+                        state: 'correct',
+                        original: "",
+                        flash: 'loading'
+                    }
+                ]
+                setChat_data(prev_data);
+                let temp_poi = inputTxt;
+                setInputTxt("");
+                let free_conv_data = await API.getFreeConversation(temp_poi, user_id);
+                let response = free_conv_data.data;
+                prev_data.pop();
+                if(Array.isArray(response)){
+                    for(let a=0;a<response.length;a++){
+                        prev_data.push({
+                            type: 1,
+                            text: response[a],
+                            state: 'correct',
+                            original: response[a],
+                            flash: ''
+                        })
+                    }
+                }else{
+                    prev_data.push({
+                        type: 1,
+                        text: response,
+                        state: 'correct',
+                        original: response,
+                        flash: ''
+                    })
+                }
+                
+                setChat_data(prev_data);
+                
+                    setTimeout(() => { setRefresh(!refresh) }, 1000)
+                
+            }
+
+        } catch (err) {
+
+        }
+    }
+    //end of conversations______
     return (
         <>
             <div className="chat-view-wrapper" id="random_chat_parent"  >
@@ -357,9 +429,9 @@ const ChatView = () => {
                 {
                     Mode == 'grammar_builder' && <>
                         <div className="gr_builder_input">
-                           
-                            <input value={grammar_builder_input} onChange={(e)=>set_grammar_builder_input(e.target.value)}/>
-                            <button className="random_word_btn" onClick={() => triggerGrammarBuilder(false,true)}>➽</button>
+
+                            <input value={grammar_builder_input} onChange={(e) => set_grammar_builder_input(e.target.value)} />
+                            <button className="random_word_btn" onClick={() => triggerGrammarBuilder(false, true)}>➽</button>
                         </div>
 
 
@@ -367,30 +439,38 @@ const ChatView = () => {
                 }
                 {
                     Mode == 'dialogues' && <>
-                    {
-                        u_correct_count < u_count && 
-                        <button className="hintBox" onClick={getHint}> {HINT}</button>
-                    }
-                   
-                     {
-                        u_correct_count === u_count && u_correct_count != 0 && <>
-                         <p className="congrats-text">
-                            Congrats ! you have completed a flow 
-                            </p>
-                         <button className="hintBox" onClick={()=> window.location.reload()}> WANT TO RETRY?</button>
-                         </>
-                       
-                    }
-                    
+                        {
+                            u_correct_count < u_count &&
+                            <button className="hintBox" onClick={getHint}> {HINT}</button>
+                        }
+
+                        {
+                            u_correct_count === u_count && u_correct_count != 0 && <>
+                                <p className="congrats-text">
+                                    Congrats ! you have completed a flow
+                                </p>
+                                <button className="hintBox" onClick={() => window.location.reload()}> WANT TO RETRY?</button>
+                            </>
+
+                        }
+
                         <div className="gr_builder_input">
-                        <input placeholder="replace blank / answer" value={inputTxt} onChange={(e) => { setInputTxt(e.target.value) }} />
-                        
-                           
-                            <button className="random_word_btn" onClick={() => triggerDialogues(false,true)}>➽</button>
+                            <input placeholder="replace blank / answer" value={inputTxt} onChange={(e) => { setInputTxt(e.target.value) }} />
+
+
+                            <button className="random_word_btn" onClick={() => triggerDialogues(false, true)}>➽</button>
                         </div>
 
 
                     </>
+                }
+                {
+                    Mode == 'free_flow_conversations' &&
+                    <div className="gr_builder_input">
+
+                        <input value={inputTxt} onChange={(e) => setInputTxt(e.target.value)} />
+                        <button className="random_word_btn" onClick={() => triggerFreeFlow(false, true)}>➽</button>
+                    </div>
                 }
                 <button className="random_word_btn" onClick={() => { navigate("/") }}>GO BACK</button>
             </div>

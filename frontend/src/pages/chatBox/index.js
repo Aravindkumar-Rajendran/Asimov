@@ -14,6 +14,8 @@ const ChatBox = () => {
       setLabel('Grammar Builder')
     }else if(params.id == 'dialogues'){
       setLabel('Dialogues')
+    }else if(params.id == 'free_flow_conversations'){
+      setLabel('Conversations')
     }
   }, [])
   return (
