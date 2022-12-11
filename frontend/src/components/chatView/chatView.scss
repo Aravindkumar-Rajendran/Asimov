@@ -109,3 +109,35 @@
         background-color: transparent;
     }
 }
+.strike_grammar{
+  line-height: 1em;
+  position: relative;
+  color:black;
+  display:inline-block;
+  transform: rotate(-15deg);
+  background-color: red;
+  padding:1px 6px;
+  border-radius: 2px;
+}
+.strike_grammar::after {
+    border-bottom: 2px solid rgb(0, 0, 0);
+    content: "";
+    left: 0;
+    margin-top: calc(0.125em / 2 * -1);
+    position: absolute;
+    right: 0;
+    top: 42%;
+   
+  }
+
+  .highlight_grammar{
+    line-height: 1em;
+    position: relative;
+    color:white;
+    display:inline-block;
+    outline:1px solid green;
+    border-radius: 2px;
+    padding:1px 6px;
+    height:100%;
+    background-color: green;
+  }

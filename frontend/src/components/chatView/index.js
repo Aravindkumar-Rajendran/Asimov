@@ -181,27 +181,30 @@ const ChatView = () => {
                     original:'',
                     flash: "loading"
                 }]);
-                let post_dta = {}//await API.postGrammarBuilding(grammar_builder_input);
+                let post_dta ={}// await API.postGrammarBuilding(grammar_builder_input);
                 
                 set_grammar_builder_input("")
                 console.log({post_dta})
                 let sample_array =[{
                     text:'HOW',
-                    strike:'true'
+                    strike:'true',
+                    highlight:'false'
                 } ,{
-                    text:'are',
-                    strike:'true'
+                    text:'HIGHTLIGHT',
+                    strike:'false',
+                    highlight:'true'
                 }, {
-                    text:'you',
+                    text:'ySUGUMARIDDFDSFDou',
                     strike:'false'
                 }]
                 let response_grmr = "";
                 sample_array.map(x => {
-                    if(x.strike == 'true'){
-                        response_grmr += `<span class="usinput"><strike>${x.text}</strike></span> `
-                    }else{
-                        response_grmr += `<span>${x.text}</span> `
-                    }
+                    let class_gr_name = '';
+                    if(x.strike == 'true') class_gr_name += " strike_grammar "
+                    if(x.highlight == 'true') class_gr_name += " highlight_grammar "
+                    
+                        response_grmr += `<span class="${class_gr_name}">${x.text}</span> `
+                    
                 })
                 setChat_data([
                     ...init_data,{
