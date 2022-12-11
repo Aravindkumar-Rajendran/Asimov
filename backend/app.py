@@ -15,7 +15,7 @@ app = FastAPI()
 
 origins = [
     "http://ec2-52-201-217-155.compute-1.amazonaws.com",
-    "http://52.201.217.155/"
+    "http://52.201.217.155"
 ]
 
 app.add_middleware(
