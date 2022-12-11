@@ -141,12 +141,14 @@ def diff_finder(in_text, out_text, width=40, margin=10, sidebyside=False, compac
     out_texts = comp[1].split()
     diff = []
     text = ''
+    mistakes = 0
     for t in range(len(out_texts)):
         if "_" in out_texts[t]:
             if text:
                 diff.append({"text":text, "strike":False})
                 text = ''
             diff.append({'text':in_texts[t], "strike": True})
+            mistakes += 1
         
         elif "_" in in_texts[t]:
             if text:
@@ -158,6 +160,17 @@ def diff_finder(in_text, out_text, width=40, margin=10, sidebyside=False, compac
             text += " "+ in_texts[t]
     if text:
         diff.append({"text":text, "strike":False})
-    return [[in_text, out_text], diff]
+    return [[in_text, out_text], diff], mistakes
 
 
+# helper fir pushing to redis hash
+def hsetex(db, name, key, value, ttl=1800):  
+    db.hset(name=name, key=key, value=value)  
+    db.expire(name=name, time=ttl)
+
+
+def make_chat(user_chat, bot_chat):
+    chat = ''
+    for bot, user in zip(bot_chat, user_chat):
+        chat += "You: " + bot + "\n" + "Person: " + user 
+    return chat
