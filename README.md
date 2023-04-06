@@ -3,4 +3,5 @@
 
 ## Demo
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/RrJeiz3nkko" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+![DEMO](https://img.youtube.com/vi/RrJeiz3nkko/0.jpg)](https://www.youtube.com/watch?v=RrJeiz3nkko)
