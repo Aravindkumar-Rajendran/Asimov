@@ -40,18 +40,32 @@ class Chat(BaseModel):
     user_id: str
     text: str 
 
+level_map = {
+    1: "beginner",
+    2: "intermediate",
+    3: "advanced"
+}
 
-@app.get("/random-word")
+
+@app.get("/random-word/")
 def random_dictionary_word():
-    ## get random word with meaning and examples from GPT3 
-    dictionary = split_random_word(get_random_word())
+    ## get random word with meaning and examples from GPT3
+    # if db.hexists(, "level"):
+    #     level = level_map[int(db.hget(user_id, "level"))]
+    # else: level = level_map[1] 
+    level = level_map[1]
+    dictionary = split_random_word(get_random_word(level))
     return dictionary
 
 
 @app.get("/dialogue")
-def send_dialogue():
+def send_dialogue(): #user_id: id
     ## send random dialogue created by GPT3
-    dialogue = split_dialogue(get_dialogue())
+    # if db.hexists(user_id, "level"):
+    #     level = level_map[int(db.hget(user_id, "level"))]
+    # else: level = level_map[1]
+    level = level_map[1]
+    dialogue = split_dialogue(get_dialogue(level))
     return dialogue
 
 
@@ -80,6 +94,7 @@ def conversations(chat: Chat):
 @app.post("/grammar")
 def grammar_corrections(chat: Chat):
     ## chatbot conversations with GPT3
+    grammar = 0
     if db.hexists(chat.user_id, "grammar"):
         grammar += int(db.hget(chat.user_id, "grammar"))
     else: grammar = 1

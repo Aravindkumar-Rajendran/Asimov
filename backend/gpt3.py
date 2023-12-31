@@ -4,11 +4,11 @@ import os
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-def get_random_word():
+def get_random_word(level):
     ## prompt gpt3 and create a dictionary word
     text_blob = openai.Completion.create(
         model="text-davinci-003",
-        prompt="Like a dictionary, give meaning of a random word with its meaning and examples",
+        prompt=f"Like a dictionary, give meaning of a {level} level random word with its meaning and examples",
         temperature=1,
         max_tokens=512,
         top_p=1,
@@ -19,10 +19,10 @@ def get_random_word():
     return text_blob.choices[0].text
 
 
-def get_dialogue():
+def get_dialogue(level):
     dialogue_blob = openai.Completion.create(
         model="text-davinci-003",
-        prompt="Create a lengthy dialogue about some random topic in basic English",
+        prompt=f"Create a lengthy dialogue about some random topic in {level} level English",
         temperature=0.7,
         max_tokens=512,
         top_p=1,
