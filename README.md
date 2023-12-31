@@ -31,3 +31,6 @@ We made a language app without working on the content manually (all generated us
 ## What's next for Asimov - AI Speech Coach
 1. Adding more flows/varieties for learning to make more fun.
 2. Adding Text to Speech for Speech feedback.
+
+## Demo
+[![DEMO](https://img.youtube.com/vi/RrJeiz3nkko/0.jpg)](https://www.youtube.com/watch?v=RrJeiz3nkko)
