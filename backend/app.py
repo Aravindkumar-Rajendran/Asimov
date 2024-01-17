@@ -3,7 +3,7 @@ load_dotenv()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from gpt3 import get_random_word, get_dialogue, get_reply, correct_grammar
+from zephyr import get_random_word, get_dialogue, get_reply, correct_grammar
 from utils import split_random_word, split_dialogue, make_chat, diff_finder, hsetex
 from pydantic import BaseModel
 import logging

@@ -5,3 +5,4 @@ openai
 spacy
 en-core-web-sm @ https://huggingface.co/spacy/en_core_web_sm/resolve/main/en_core_web_sm-any-py3-none-any.whl
 redis
+transformers
